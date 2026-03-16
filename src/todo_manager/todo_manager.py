@@ -8,9 +8,24 @@ def print_tasks(tasks):
 		status = "Done" if task['completed'] else "Pending"
 		print(f"{idx}. {task['desc']} (Priority: {task['priority']}) - {status}")
 
+def add_task(tasks, desc, priority):
+	tasks.append({"desc": desc, "priority": priority, "completed": False})
+	return tasks
+
+def delete_task(tasks, num):
+	if num.isdigit() and 1 <= int(num) <= len(tasks):
+		return tasks.pop(int(num) - 1)
+	return None
+
+def complete_task(tasks, num):
+	if num.isdigit() and 1 <= int(num) <= len(tasks):
+		idx = int(num) - 1
+		if not tasks[idx]['completed']:
+			tasks[idx]['completed'] = True
+			return True
+	return False
 def main():
 	tasks = []
-	completed_count = 0
 	print("Welcome to the To-Do List Manager!")
 	while True:
 		print("\nChoose an action: add, view, delete, complete, exit")
@@ -18,7 +33,7 @@ def main():
 		if action == "add":
 			desc = input("Enter task description: ").strip()
 			priority = input("Enter priority (high/medium/low): ").strip().lower()
-			tasks.append({"desc": desc, "priority": priority, "completed": False})
+			add_task(tasks, desc, priority)
 			print("Task added.")
 		elif action == "view":
 			print_tasks(tasks)
@@ -27,8 +42,8 @@ def main():
 			if not tasks:
 				continue
 			num = input("Enter task number to delete: ").strip()
-			if num.isdigit() and 1 <= int(num) <= len(tasks):
-				removed = tasks.pop(int(num) - 1)
+			removed = delete_task(tasks, num)
+			if removed:
 				print(f"Removed: {removed['desc']}")
 			else:
 				print("Invalid task number.")
@@ -37,15 +52,10 @@ def main():
 			if not tasks:
 				continue
 			num = input("Enter task number to mark as complete: ").strip()
-			if num.isdigit() and 1 <= int(num) <= len(tasks):
-				idx = int(num) - 1
-				if not tasks[idx]['completed']:
-					tasks[idx]['completed'] = True
-					print(f"Marked as complete: {tasks[idx]['desc']}")
-				else:
-					print("Task already completed.")
+			if complete_task(tasks, num):
+				print(f"Marked as complete: {tasks[int(num)-1]['desc']}")
 			else:
-				print("Invalid task number.")
+				print("Invalid task number or already completed.")
 		elif action == "exit":
 			break
 		else:
